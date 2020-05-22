@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+</head>
+<body>
+	<script>
+
+        var config = {
+            type: Phaser.AUTO,
+            width: window.outerWidth,
+            height: window.outerHeight,
+            pixelArt: true,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    //gravity: { y: 300 },
+                  //  debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+	var game = new Phaser.Game(config);
+  var velocidad1 = -260;
+  var velocidad2 = 260;
+  var player;
+  var position1 = 1600;
+  var position2 = 1200
+  var zoomcamara = 1;
+
+  var score = 0;
+  var scoreText;
+  var scoreText2;
+
+	function preload ()
+	{
+        this.load.image('fondo', 'assets/parque.png');
+        this.load.image('bola', 'assets/basura.png');
+        this.load.image('dude','assets/camion1.png');
+	}
+
+	function create ()
+	{
+            this.cameras.main.setBounds(0, 0, 3200, 2400);
+
+            this.add.image(0, 0, 'fondo').setOrigin(0).setScrollFactor(1);
+
+            cursors = this.input.keyboard.createCursorKeys();
+
+            player = this.physics.add.image(position1, position2, 'dude');
+            scoreText = this.add.text(position1, position2, 'score: 0', { fontSize: '32px', fill: '#000' });
+
+            // ship = this.add.image(400.5, 301.3, 'ship');
+
+            this.cameras.main.startFollow(player, true, 0.09, 0.09);
+            // this.cameras.main.roundPixels = true;
+            this.cameras.main.setZoom(zoomcamara);
+            //  this.cameras.main.setZoom(4);
+            //this.cameras.main.se
+
+
+            //player.setBounce(0.2);
+            //player.setCollideWorldBounds(true);
+            bolas = this.physics.add.staticGroup();
+
+
+            var i = 30;
+
+            for (i=i;i>=1;i--) {
+            bolas.create(Math.floor(Math.random() * 3200), Math.floor(Math.random() * 2400),'bola');
+                               }
+
+            this.physics.add.overlap(player, bolas, collectBolas, null, this);
+
+            var conta = 1;
+
+            function collectBolas (player, bola)
+            {
+            conta=conta+1;
+            bola.disableBody(true, true);
+            bolas.create(Math.floor(Math.random() * 3200), Math.floor(Math.random() * 2400),'bola');
+            score += 10;
+            scoreText.setText('Score: ' + score);
+            if(score == 200)
+            {
+                scoreText2 = this.add.text(position1, position2, 'GAME OVER', { fontSize: '250px', fill: '#000' });
+                velocidad1 = 0;
+                velocidad2 = 0;
+            }
+            //velocidad1=velocidad1+1;
+            //velocidad2=velocidad2-1;
+            //player.setScale(conta*0.1+1).refreshBody();
+            //zoomcamara= zoomcamara-.5;
+          }
+
+
+	}
+
+  function updateDirect ()
+  {
+    if (cursors.left.isDown)
+    {
+        player.setAngle(-90);
+        player.x -= 2.5;
+    }
+    else if (cursors.right.isDown)
+    {
+        player.setAngle(90);
+        player.x += 2.5;
+    }
+
+    if (cursors.up.isDown)
+    {
+        player.setAngle(0);
+        player.y -= 2.5;
+    }
+    else if (cursors.down.isDown)
+    {
+        player.setAngle(-180);
+        player.y += 2.5;
+    }
+
+  }
+
+
+
+
+	function update ()
+	{
+        //player.setVelocityX(0);
+        player.setVelocity(0);
+
+        if (cursors.left.isDown)
+        {
+            player.setVelocityX(velocidad1);
+        }
+        else if (cursors.right.isDown)
+        {
+            player.setVelocityX(velocidad2);
+        }
+
+        if (cursors.up.isDown)
+        {
+            player.setVelocityY(velocidad1);
+        }
+        else if (cursors.down.isDown)
+        {
+          player.setVelocityY(velocidad2);
+        }
+
+        if(player.body.position.x > 3200)
+        {
+          player.x = 80;
+        }
+        else if(player.body.position.y > 2400)
+        {
+          player.y = 80;
+        }
+        if(player.body.position.x < -20)
+        {
+          player.x = 3200;
+        }
+        else if(player.body.position.y < -20)
+        {
+          player.y = 2400;
+        }
+
+	}
+  //game.camara.Scale.x -= .003;
+  //para disminuir la camara
+
+  /*function collectBolas (player, bola)
+  {
+    bola.disableBody(true, true);
+  }*/
+
+
+    </script>
+</body>
+</html>
